@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Paper - BBB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+       <header class="nav-container">
+            <div class="nav-left">
+                <img src="/assets/images/smile-2_removebg.png" alt="Smile.png" class="nav-header__logo">
+                <h1 class="nav-header__name">BBB</h1>
+            </div>
+            <div class="nav-items">
+                <a class="nav-item" href="#">Homepage</a>
+                <a class="nav-item" href="#">Papers</a>
+                <a class="nav-item" href="#">Search</a>
+            </div>
+            <div class="nav-right">
+                <a href="#" class="btn-header">Login</a>
+            </div>
+        </header>
+        
+        <!-- Main -->
+        <div class="main-container">
+            <section class="paper-list-container">
+                <h2 class="paper-list-title">Add New Paper</h2>
+                <hr class="breakline">
+
+                <form class="search-form">
+                    <div class="search-row">
+                        <label class="form-label" for="keyword">Title</label>
+                        <input type="text" id="keyword" class="input-field" placeholder="Article title">
+                    </div>
+
+                    <div class="search-row">
+                        <label class="form-label" for="author">Summary</label>
+                        <input type="text" id="keyword" class="input-field" placeholder="Summary">
+                    </div>
+
+                    <div class="search-row">
+                        <label class="form-label" for="conference">Topic</label>
+                        <select id="conference" class="input-field">
+                            <option>Select topic</option>
+                        </select>
+                    </div>
+
+                    <div class="search-row">
+                        <label class="form-label" for="topic">Conference</label>
+                        <select id="topic" class="input-field">
+                            <option>Select conference</option>
+                        </select>
+                    </div>
+                    <div class="author-list-section">
+                        <h3 class="form-label">List Author</h3>
+                        <hr class="breakline">
+
+                        <div class="author-row">
+                            <select class="input-field">
+                            <option>Select author</option>
+                            </select>
+                            <select class="input-field">
+                            <option>Select role</option>
+                            </select>
+                            <button type="button" class="delete-btn">✖</button>
+                        </div>
+
+                        <div class="author-row">
+                            <select class="input-field">
+                            <option>Select author</option>
+                            </select>
+                            <select class="input-field">
+                            <option>Select role</option>
+                            </select>
+                            <button type="button" class="delete-btn">✖</button>
+                        </div>
+
+                        <div class="add-author-link">
+                            <a href="#">+ Add new author</a>
+                        </div>
+                    </div>
+                    <div class="search-btn-wrapper">
+                        <button type="submit" class="btn-primary p-center">
+                            Add new author
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <p><strong>Subject</strong><br>Distributed System - 21HTTT</p>
+                    <p><strong>Student</strong><br>21127659 - Bui Ngoc Kieu Nhi</p>
+                    </div>
+                <div class="footer-col">
+                    <p><strong>Monday - Saturday:</strong> 7:00 am - 9:00 pm</p>
+                    <p><strong>Sunday:</strong> Close</p>
+                </div>
+                <div class="footer-col">
+                    <p><strong>Address</strong><br>Nguyen Van Cu street, district 5, Ho Chi Minh city</p>
+                    <p><strong>Phone</strong><br>01112023</p>
+                </div>
+            </div>
+            <hr class="breakline">
+            <div class="social-icons">
+                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-brands fa-facebook"></i>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

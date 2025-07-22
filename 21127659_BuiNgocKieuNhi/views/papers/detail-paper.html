@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <title>Detail Paper - BBB</title>
+</head>
+<body>
+    <!-- Popup overlay -->
+    <div class="paper-popup-overlay" id="paperDetailPopup">
+        <div class="paper-popup">
+            <h3 class="paper-list-title">Data Science Applications in Healthcare</h3>
+
+            <p class="paper-detail-description"><strong>Summary:</strong> An in-depth study on recent advancements in AI.</p>
+            <p class="paper-detail-description"><strong>Topic:</strong> Artificial Intelligence</p>
+            <p class="paper-detail-description"><strong>Conference:</strong> ICAI 2024</p>
+            <p class="paper-detail-description"><strong>Uploader:</strong> John Smith</p>
+
+            <table class="tbl-paper">
+                <thead>
+                    <tr class="paper-detail-description">
+                        <th class="tbl-content">Author</th>
+                        <th class="tbl-content">Role</th>
+                        <th class="tbl-content">Date</th>
+                        <th class="tbl-content">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="paper-detail-description">
+                        <td class="tbl-content">John Smith</td>
+                        <td class="tbl-content">First Author</td>
+                        <td class="tbl-content">03/06/2024</td>
+                        <td class="admin-only"><span class="delete-icon">❌</span></td>
+                    </tr>
+                    <tr class="paper-detail-description">
+                        <td class="tbl-content">Emily Davis</td>
+                        <td class="tbl-content">Member</td>
+                        <td class="tbl-content">04/06/2024</td>
+                        <td class="admin-only"><span class="delete-icon">❌</span></td>
+                    </tr>
+                    <tr class="paper-detail-description">
+                        <td class="tbl-content">Davis Harris</td>
+                        <td class="tbl-content">First Author</td>
+                        <td class="tbl-content">05/06/2024</td>
+                        <td class="admin-only"><span class="delete-icon">❌</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Only show if current user not in authors -->
+            <div class="add-author-link">
+                <a class=""href="#">+ Add me to the article</a>
+            </div>
+
+            <button class="btn-outline p-center" onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -926,3 +926,7 @@ function closePopup() {
     transform: scale(1.2);
 }
 
+.disabled-btn {
+    opacity: 0.3;
+    cursor: not-allowed;
+}

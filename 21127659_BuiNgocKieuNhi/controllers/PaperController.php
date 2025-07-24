@@ -1,5 +1,7 @@
 <?php
 require_once 'models/PaperModel.php';
+require_once 'models/AuthorModel.php';
+
 
 class PaperController {
 
@@ -8,18 +10,35 @@ class PaperController {
         $latestPapersByTopic = PaperModel::getLatestPapersByTopic();
         include './views/user/home.php';
     }
+
     public function listAll() {
         $papers = PaperModel::getAllPapers();
-        $topics = PaperModel::getAllTopics(); // dùng để lọc
-        include (__DIR__ . "/../views/papers/list.php");
+        $topics = PaperModel::getAllTopics(); 
+        include './views/papers/list.php';
     }
-    // Hiển thị danh sách theo topic
-    public function listByTopic() {
-        $topic_id = $_GET['topic_id'] ?? null;
 
-        $model = new PaperModel();
-        $papers = $model->getPapersByTopic($topic_id);
-        require 'views/papers/list.php';
+    public function filter($topic_id) {
+        $papers = PaperModel::getPapersByTopic($topic_id);
+        include './views/papers/list-ajax.php';
+    }
+
+    public function showSearchForm() {
+        $topics = PaperModel::getAllTopics(); 
+        $conferences = PaperModel::getAllConferences();
+        $authors = AuthorModel::getAll();
+        include './views/papers/search.php';
+    }
+
+    public function search() {
+        $keyword = $_GET['keyword'] ?? '';
+        $author = $_GET['author'] ?? '';
+        $conference = $_GET['conference'] ?? '';
+        $topic = $_GET['topic'] ?? '';
+
+        $papers = PaperModel::searchPapers($keyword, $author, $conference, $topic);
+        
+        // Đây là AJAX, chỉ render phần kết quả
+        include(__DIR__ . '/../views/papers/search-result.php');
     }
 
     // Trang hiển thị form thêm paper
@@ -33,24 +52,54 @@ class PaperController {
     }
 
     // Xử lý thêm paper mới (POST)
-    public function addPaper() {
+    public function addNewPaper() {
+        $user_id = $_SESSION['user_id'] ?? null; // đảm bảo người dùng đã đăng nhập
+
+        if (!$user_id) {
+            echo "You must be logged in to add a paper.";
+            return;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = $_POST['title'] ?? '';
-            $summary = $_POST['summary'] ?? '';
-            $topic_id = $_POST['topic_id'] ?? '';
-            $conference_id = $_POST['conference_id'] ?? '';
-            $author_ids = $_POST['author_ids'] ?? [];
-            $author_roles = $_POST['author_roles'] ?? [];
+            $abstract = $_POST['summary'] ?? '';
+            $topic_id = $_POST['topic_id'] ?? null;
+            $conference_id = $_POST['conference_id'] ?? null;
+            $author_ids = $_POST['authors'] ?? [];
+            $roles = $_POST['roles'] ?? [];
 
-            $model = new PaperModel();
-            $paper_id = $model->insertPaper($title, $summary, $conference_id, $topic_id);
-
-            // Thêm các tác giả
-            for ($i = 0; $i < count($author_ids); $i++) {
-                $model->addAuthorToPaper($paper_id, $author_ids[$i], $author_roles[$i]);
+            // Validate required fields
+            if (empty($title) || empty($abstract) || !$topic_id || !$conference_id || empty($author_ids)) {
+                echo "Please fill in all required fields.";
+                return;
             }
 
-            header("Location: index.php?action=paper-detail&id=$paper_id");
+            $author_names = [];
+            foreach ($author_ids as $id) {
+                $author = AuthorModel::find($id);
+                if ($author) {
+                    $author_names[] = $author->full_name;
+                }
+            }
+
+            $author_string_list = implode(", ", $author_names);
+
+            // Thêm vào bảng papers
+            $paper_id = PaperModel::insertPaper($title, $abstract, $topic_id, $conference_id, $user_id, $author_string_list);
+
+            // Insert authors
+            foreach ($authors as $index => $user_id) {
+                $role = $roles[$index] ?? 'Author';
+                PaperModel::insertPaperAuthor($paper_id, $user_id, $role);
+            }
+
+            header("Location: index.php?action=list-papers");
+        } else {
+            // Hiển thị lại form nếu là GET
+            $topics = PaperModel::getAllTopics();
+            $conferences = PaperModel::getAllConferences();
+            $authors = AuthorModel::getAll();
+            require 'views/papers/add-paper.php';
         }
     }
 

@@ -9,24 +9,27 @@ class UserController {
     }
 
     // Xử lý đăng nhập
-    public function login() {
+    public function handleLogin() {
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        $model = new UserModel();
-        $user = $model->getUserByUsername($username);
+        if (empty($username) || empty($password)) {
+            echo "Please enter both username and password.";
+            return;
+        }
 
-        if ($user && password_verify($password, $user['password'])) {
+        $user = UserModel::getUserByUsername($username);
+
+        if ($user && $password === $user['password']) {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['user_type'] = $user['user_type'];
-            header('Location: index.php');
+            header("Location: index.php");
+            exit;
         } else {
-            $error = "Invalid username or password.";
-            require 'views/user/login.php';
+            echo "Invalid username or password.";
         }
     }
-
     // Đăng xuất
     public function logout() {
         session_destroy();
@@ -37,12 +40,20 @@ class UserController {
     public function showProfile() {
         if (!isset($_SESSION['user_id'])) {
             header("Location: index.php?action=login");
+            exit;
+        }
+
+        $user_id = $_SESSION['user_id'];
+
+        $user = UserModel::getUserById($user_id);
+        $author = AuthorModel::find($user_id);
+        $papers = UserModel::getPapersByUserId($user_id);
+
+        if (!$user) {
+            echo "User not found.";
             return;
         }
 
-        $model = new UserModel();
-        $user = $model->getUserById($_SESSION['user_id']);
-        $author = $model->getAuthorById($_SESSION['user_id']);
         require 'views/authors/profile.php';
     }
 
@@ -53,23 +64,60 @@ class UserController {
             return;
         }
 
-        $model = new UserModel();
-        $user = $model->getUserById($_SESSION['user_id']);
-        $author = $model->getAuthorById($_SESSION['user_id']);
+        $user_id = $_SESSION['user_id'];
+
+        $author = AuthorModel::find($user_id);
+        $user = UserModel::getUserById($user_id);
+        $profile = json_decode($author->profile_json_text, true);
         require 'views/authors/edit-profile.php';
     }
 
     // Xử lý cập nhật hồ sơ
     public function updateProfile() {
-        $full_name = $_POST['full_name'] ?? '';
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: index.php?action=login");
+            return;
+        }
+
+        $user_id = $_SESSION['user_id'];
+        $email = $_POST['email'] ?? '';
+        $fullname = $_POST['fullname'] ?? '';
         $website = $_POST['website'] ?? '';
-        $profile = $_POST['profile'] ?? '';
-        $image_path = $_POST['image_path'] ?? '';
+        $bio = $_POST['bio'] ?? '';
+        $interests = $_POST['interests'] ?? '';
+        $education = $_POST['education'] ?? '';
+        $experience = $_POST['experience'] ?? '';
 
-        $model = new UserModel();
-        $model->updateAuthor($_SESSION['user_id'], $full_name, $website, $profile, $image_path);
+        // Xử lý ảnh đại diện
+        $image_path = null;
+        if (isset($_FILES['upload-photo']) && $_FILES['upload-photo']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = 'assets/images/';
+            $filename = basename($_FILES['upload-photo']['name']);
+            $targetFile = $uploadDir . $filename;
 
+            if (move_uploaded_file($_FILES['upload-photo']['tmp_name'], $targetFile)) {
+                $image_path = '/images/' . $filename; // lưu path tương đối từ assets
+            }
+        }
+
+        // Cập nhật users
+        UserModel::updateEmail($user_id, $email);
+
+        // Chuẩn bị profile JSON
+        $profile = [
+            "bio" => $bio,
+            "interests" => array_map('trim', explode(',', $interests)),
+            "education" => $education,
+            "experience" => $experience
+        ];
+        $profile_json = json_encode($profile, JSON_UNESCAPED_UNICODE);
+
+        // Cập nhật authors
+        AuthorModel::updateAuthor($user_id, $fullname, $website, $profile_json, $image_path);
+
+        // Chuyển về trang profile
         header("Location: index.php?action=profile");
+        exit;
     }
 }
 ?>

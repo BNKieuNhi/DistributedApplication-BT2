@@ -13,7 +13,7 @@
             <a href="index.php?action=list-papers" class="btn-primary">All papers</a>
         </div>
         <div class="intro-right">
-            <img src="/DistributedSystem/21127659_BuiNgocKieuNhi/assets/images/banner.png" alt="Banner image">
+            <img src="/21127659_BuiNgocKieuNhi/assets/images/banner.png" alt="Banner image">
         </div>
     </section>
 

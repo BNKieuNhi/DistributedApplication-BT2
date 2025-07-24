@@ -4,42 +4,59 @@ require_once 'config/config.php';
 class UserModel {
 
     // Lấy người dùng theo username
-    public function getUserByUsername($username) {
-        global $conn;
-        $sql = "SELECT * FROM USERS WHERE username = ? AND status = 'active'";
-        $stmt = $conn->prepare($sql);
+    public static function getUserByUsername($username) {
+        $conn = connect();
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $conn->close();
+        return $user;
     }
 
     // Lấy người dùng theo ID
-    public function getUserById($user_id) {
-        global $conn;
-        $sql = "SELECT * FROM USERS WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
+    public static function getUserById($user_id) {
+        $conn = connect();
+        $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $conn->close();
+        return $user;
     }
-
-    // Lấy thông tin tác giả (AUTHOR) theo user_id
-    public function getAuthorById($user_id) {
-        global $conn;
-        $sql = "SELECT * FROM AUTHORS WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
+    public static function getPapersByUserId($user_id) {
+        $conn = connect();
+        $query = "
+            SELECT p.* 
+            FROM papers p
+            WHERE p.user_id = ?
+            ORDER BY p.paper_id DESC
+        ";
+        $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        $papers = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $papers[] = $row;
+        }
+
+        $stmt->close();
+        $conn->close();
+
+        return $papers;
+    }
+    public static function updateEmail($user_id, $email) {
+        $conn = connect();
+        $stmt = $conn->prepare("UPDATE users SET email = ? WHERE user_id = ?");
+        $stmt->bind_param("si", $email, $user_id);
+        $stmt->execute();
+        $stmt->close();
+        $conn->close();
     }
 
-    // Cập nhật thông tin tác giả
-    public function updateAuthor($user_id, $full_name, $website, $profile, $image_path) {
-        global $conn;
-        $sql = "UPDATE AUTHORS SET full_name = ?, website = ?, profile_json_text = ?, image_path = ? WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $full_name, $website, $profile, $image_path, $user_id);
-        $stmt->execute();
-    }
 }
 ?>

@@ -43,24 +43,41 @@ class AuthorModel
 
     public static function getAll()
     {
-        $mysqli = connect();
+        $conn = connect();
         $query = "SELECT * FROM authors";
-        $result = $mysqli->query($query);
+        $result = $conn->query($query);
         $authorList = array();
 
         if ($result) {
             foreach ($result as $row) {
-                $author = new AuthorModel();
-                $author->user_id = $row["user_id"];
-                $author->full_name = $row["full_name"];
-                $author->website = $row["website"];
-                $author->profile_json_text = $row["profile_json_text"];
-                $author->image_path = $row["image_path"];
-                $authorList[] = $author; //add an item into array
+                $author = [
+                    'user_id' => $row['user_id'],
+                    'full_name' => $row['full_name'],
+                    'website' => $row['website'],
+                    'profile_json_text' => $row['profile_json_text'],
+                    'image_path' => $row['image_path']
+                ];
+                $authorList[] = $author;
             }
         }
-        $mysqli->close();
-        return $authorList;
+
+        $conn->close();
+        return $authorList; 
+    }
+    public static function updateAuthor($user_id, $full_name, $website, $profile_json_text, $image_path = null) {
+        $conn = connect();
+
+        if ($image_path) {
+            $stmt = $conn->prepare("UPDATE authors SET full_name = ?, website = ?, profile_json_text = ?, image_path = ? WHERE user_id = ?");
+            $stmt->bind_param("ssssi", $full_name, $website, $profile_json_text, $image_path, $user_id);
+        } else {
+            $stmt = $conn->prepare("UPDATE authors SET full_name = ?, website = ?, profile_json_text = ? WHERE user_id = ?");
+            $stmt->bind_param("sssi", $full_name, $website, $profile_json_text, $user_id);
+        }
+
+        $stmt->execute();
+        $stmt->close();
+        $conn->close();
     }
 
 }
